@@ -29,6 +29,25 @@ make install
 obs
 ```
 
+## Running applications ins examples
+
+1. Here are a sequence of commad to run sampleapplication
+```
+docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -h $HOSTNAME  -v `pwd`:/data/obs-studio/  -v /home/shashi/sb_media/:/data/sb_media/  -v /home/shashi/sb_work/GithubRepos/obs-automate/:/data/obs_automate shashibanger/obs-studio-base:1.0.0 bash
+
+# Inside docker
+cd /data/obs-studio/
+mkdir build
+cd build
+cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr ..
+make -j 4 
+make install
+cd /data/obs_automate/build
+cmake ../
+make
+# The following application reads a file from /data/sb_media/ and decodes and creates an output file in /root/out.mkv
+./simple_obs_app
+```
 
 ## References
 

@@ -41,7 +41,7 @@ obs_source_t*  setSceneAndSource() {
 
 	trace_debug("create ffmpeg src");
 
-	obs_data_set_string(obs_data, "local_file", "/data/sb_media/ChevyCruze_30s_ts.mkv");
+	obs_data_set_string(obs_data, "local_file", "/data/media.mkv");
 	obs_data_set_bool(obs_data, "is_local_file", true);
 	obs_data_set_bool(obs_data, "looping", true);
 	obs_data_set_bool(obs_data, "hw_decode", false);

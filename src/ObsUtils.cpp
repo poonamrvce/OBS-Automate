@@ -79,6 +79,11 @@ int ObsInit() {
         trace_error("failed to load lib obs-ffmpeg.so");
         return -1;
 	}
+
+	if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-browser.so", LIBOBS_PLUGINS_DATA_PATH "obs-browser")) {
+        trace_error("failed to load lib obs-ffmpeg.so");
+        return -1;
+	}
 	
 	if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-transitions.so", LIBOBS_PLUGINS_DATA_PATH "obs-transitions")) {
         trace_error("failed to load lib obs-transitions.so");

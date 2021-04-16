@@ -33,3 +33,16 @@ add_executable(scene_switch_app
 target_link_libraries(scene_switch_app
     Qt5::Widgets
     obs)
+
+# obs_browser_app
+add_executable(obs_browser_app 
+                src/Encoder.cpp
+                src/Show.cpp
+                src/Scene.cpp
+                src/Source.cpp
+                src/ObsUtils.cpp
+                examples/obs_browser_app.cpp)
+
+target_link_libraries(obs_browser_app
+    Qt5::Widgets
+    obs)

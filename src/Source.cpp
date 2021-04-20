@@ -40,11 +40,14 @@ obs_source_t* Source::browserUrlSourceCreate(std::string name, std::string url){
 
 	obs_data_set_string(obs_data, "url", url.c_str());
 	obs_data_set_bool(obs_data, "is_local_file", false);
-
+	obs_data_set_int(obs_data, "width", 640);
+	obs_data_set_int(obs_data, "height", 480);
+	obs_data_set_int(obs_data, "fps", 25);
 
 	obs_source_ = obs_source_create("browser_source", name.c_str(), obs_data, nullptr);
 
-	printf("WIDTH %d HEIGHT %d\n" ,(obs_source_get_width(obs_source_)), (obs_source_get_height(obs_source_)));
+	printf("WIDTH %d HEIGHT %d %p\n" ,
+		(obs_source_get_width(obs_source_)), (obs_source_get_height(obs_source_)), obs_source_);
 
 	obs_data_release(obs_data);
 	if (!obs_source_) {

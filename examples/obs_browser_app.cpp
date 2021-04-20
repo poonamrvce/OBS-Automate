@@ -15,17 +15,25 @@ int gTraceFormat = TRACE_FORMAT_TEXT;
 
 int main(int argc, char *argv[]) {
     if(argc < 2) {
-        std::cout << "Usage: ./obs_browser_app <url>";
+        std::cout << "Usage: ./obs_browser_app <base_video_file> <url>";
         exit(1);
     }
-    std::string   url(argv[1]);
+    std::string   local_file1(argv[1]);
+    std::string   url(argv[2]);
     std::string   show_name("ObsBrowserShow");
     obs_output_t*   output;
 	obs_data_t*     ffmpeg_mux_settings;
 	QApplication app(argc, argv);
 	ObsInit();
 
-    // Create a file source
+    // Local file source params
+    SourceParams sourceParams1 = {
+        .name = "local_file_source_1",
+        .sourceType = LocalFile,
+        .url = local_file1
+    };
+
+    // Browser source params
     SourceParams sourceParams = {
         .name = "url_source",
         .sourceType = BrowserUrl,
@@ -35,15 +43,23 @@ int main(int argc, char *argv[]) {
         .name = "scene1"
     };
 
-    Source *source1 = new Source(&sourceParams); 
+    Source *source1 = new Source(&sourceParams1); 
+    Source *source2 = new Source(&sourceParams); 
+
     Scene *scene1 = new Scene(&sceneParams);
 
     Show *show = new Show(show_name);
     struct vec2 bounds = {1920, 1080};
     scene1->AddSource(source1,  &bounds);
+    struct vec2 bounds1 = {800, 600};
+    scene1->AddSource(source2,  &bounds1);
 
+    
+    
     show->AddScene(scene1);
     show->SetActiveScene("scene1");
+
+    
 
     //============= Create encoders ========================
     Encoder *encoder = new Encoder();
@@ -86,10 +102,12 @@ int main(int argc, char *argv[]) {
 	obs_data_release(ffmpeg_mux_settings);
 
     obs_set_output_source(0, show->GetShowSource());
-    obs_output_set_media(output, obs_get_video(), obs_get_audio());
+    obs_encoder_set_video(encoder->GetVideoEncoder(), obs_get_video());
+
+    usleep(10000000);
 
     //obs_set_output_source(1, scene2->GetSceneSource());
-	obs_encoder_set_video(encoder->GetVideoEncoder(), obs_get_video());
+	
 	obs_encoder_set_audio(encoder->GetAudioEncoder(), obs_get_audio());
 	obs_output_set_video_encoder(output, encoder->GetVideoEncoder());
 	obs_output_set_audio_encoder(output, encoder->GetAudioEncoder(), 0);
@@ -99,5 +117,7 @@ int main(int argc, char *argv[]) {
 	if(obs_output_start(output) != true) {
 		trace_error("obs_output_start failed");
 	}
+
+    usleep(30000000);
 
 }

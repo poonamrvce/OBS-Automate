@@ -29,5 +29,5 @@ void Show::SceneSwitch(std::string scene_name) {
 }
 
 int Show::AddScene(Scene *scene) {
-	scenes_[scene->GetName()] = scene;
+	scenes_[scene->get_source_name()] = scene;
 }

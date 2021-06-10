@@ -12,23 +12,25 @@ struct SceneParams {
 };
 
 class Scene {
-    public:
-    Scene(SceneParams *params);
-    obs_source_t* GetSceneSource() {
-        return obs_scene_get_source(obs_scene_);
-    }
-    obs_scene_t *GetScene() {
-        return obs_scene_;
-    }
-    std::string GetName() {
-        return name_;
-    }
-    int AddSource(Source *source, struct vec2 *bounds);
+    
     private:
-    std::string  name_;
-    std::map<std::string, Source*>  sources_; /**< Sources belonging to the scene */
-    obs_scene_t* obs_scene_;
+    std::string  _name;
+    std::map<std::string, Source*>  _sources; /**< Sources belonging to the scene */
+    obs_scene_t* _obs_scene;
 
+    public:
+    obs_scene_t *GetScene() {
+        return _obs_scene;
+    }
+    std::string get_source_name() {
+        return _name;
+    }
+    static vec2 *default_bounds ;
+    Scene(SceneParams *params);
+    obs_source_t* GetSceneSource();
+    int AddSource(Source *source, vec2 *bounds);
+    int AddSource(Source *source, vec4 *bounds);
+    vec2 get_bounds();
 };
 
 #endif //__SCENE_HPP__

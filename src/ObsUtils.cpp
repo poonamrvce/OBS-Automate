@@ -1,9 +1,6 @@
 #include "ObsUtils.hpp"
 
-#define LIBOBS_PLUGINS_PATH "/usr/lib/obs-plugins/"
-#define LIBOBS_PLUGINS_DATA_PATH "/usr/share/obs/obs-plugins/"
-
-static int loadModule(const char* binPath, const char* dataPath) {
+int loadModule(const char* binPath, const char* dataPath) {
 	obs_module_t *module;
 
 	int code = obs_open_module(&module, binPath, dataPath);
@@ -105,6 +102,11 @@ int ObsInit() {
         LOG(ERROR)<<"failed to load lib obs-browser.so"<<std::endl;
         return -1;
 	}
+
+	// if(0 != loadModule(LIBOBS_PLUGINS_PATH "text-freetype2.so", LIBOBS_PLUGINS_DATA_PATH "text-freetype2")) {
+    //     LOG(ERROR)<<"failed to load lib text-freetype2.so"<<std::endl;
+    //     return -1;
+	// }
 
 	obs_post_load_modules();
 

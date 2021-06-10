@@ -20,6 +20,16 @@ map<Scene*,list<Source*>> scenes;
 
 int main(int argc, char *argv[]) {
 
+
+    SourceParams sourceParams = {
+        .name = "local_file_source_1",
+        .sourceType = SourceType::Text,
+        {
+            .text = "hello world"
+        }
+    };
+    Source *source1 = new Source(&sourceParams); 
+
     string   show_name("SceneSwitchShow");
     obs_output_t*   output;
 	obs_data_t*     ffmpeg_mux_settings;
@@ -33,7 +43,7 @@ int main(int argc, char *argv[]) {
     if(argc>1){
         filebuf fb;
             
-        if (fb.open ("input.txt",ios::in))
+        if (fb.open (argv[1],ios::in))
         {
             istream is(&fb);
             input_scene(scenes,is);
@@ -47,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     for(auto scene:scenes){
         show->AddScene(scene.first);
-        show->SetActiveScene((*scenes.begin()).first->GetName());
+        show->SetActiveScene((*scenes.begin()).first->get_source_name());
     }
 
     RTMPInfo info={"rtmp://localhost:1935/live","app4"};
@@ -59,7 +69,7 @@ int main(int argc, char *argv[]) {
     unordered_set<string> scene_names;
     cout<<"Scenes: ";
     for(auto scene :scenes){
-        string s=scene.first->GetName();
+        string s=scene.first->get_source_name();
         cout<<s<<", ";
         scene_names.insert(s);
     }
@@ -67,9 +77,15 @@ int main(int argc, char *argv[]) {
     string cmd;
 	for(;;) {
         
-        getline(cin,cmd);
+        cin>>cmd;
+        switch(cmd.back()){
+            case ' ':
+            case '\n':
+                cmd.pop_back();
+                break;
+        }
         if(scene_names.find(cmd)==scene_names.end())
-            cout<<"can't find source";
+            cout<<"can't find source "<<cmd<<'('<<cmd.size()<<")\n";
         else
             show->SceneSwitch(cmd);
         

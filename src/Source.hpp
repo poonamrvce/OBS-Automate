@@ -4,6 +4,7 @@
 #include <string>
 #include "obs/obs.h"
 #include "Logging.hpp"
+#include "ObsUtils.hpp"
 #include <unordered_map>
 
 using namespace std;
@@ -11,10 +12,12 @@ using namespace std;
 enum class SourceType {
 	InvalidType = -1,
 	LocalFile = 0,
-	RTMP,
     Browser,
     Color,
-    Image
+    Image,
+    Text,
+    Scene,
+	// RTMP,
 };
 
 struct SourceParams {
@@ -24,25 +27,26 @@ struct SourceParams {
         const char *localFile;
         const char *url;
         unsigned int color;
+        const char *text;
     };
 };
 
 class Source {
     public:
-    static unordered_map<string,pair<SourceType,string>> all_sources;
-    static string allSourcePattern();
     Source(SourceParams *params);
-    obs_source_t *GetObsSource() { return obs_source_;}
-    string  GetName() { return name_;}
+    obs_source_t *get_obs_source() { return obs_source_;}
+    string  get_source_name() { return name_;}
 
     private:
     string   name_;
     obs_source_t   *obs_source_;
     private:
-    obs_source_t* localFileSourceCreate(string name, string localFile, bool looping);
-    obs_source_t* browserSourceCreate(string name, string url);
-    obs_source_t* colorSourceCreate(string name, int color);
-    obs_source_t* imageSourceCreate(string name, string localFile);
+    obs_source_t* get_local_file_source(string name, string localFile, bool looping);
+    obs_source_t* get_browser_source(string name, string url);
+    obs_source_t* get_color_source(string name, int color);
+    obs_source_t* get_image_source(string name, string localFile);
+    obs_source_t* get_text_source(string name, string text);
+
 
 };
 

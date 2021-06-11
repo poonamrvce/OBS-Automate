@@ -28,8 +28,8 @@ class Scene {
     static vec2 *default_bounds ;
     Scene(SceneParams *params);
     obs_source_t* GetSceneSource();
-    int AddSource(Source *source, vec2 *bounds);
-    int AddSource(Source *source, vec4 *bounds);
+    int add_source(Source *source, vec2 *bounds);
+    int add_source(Source *source, vec4 *bounds);
     vec2 get_bounds();
 };
 

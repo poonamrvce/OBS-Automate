@@ -1,4 +1,3 @@
-
 #include "obs/obs.h"
 #include "Scene.hpp"
 
@@ -17,7 +16,14 @@ Scene::Scene(SceneParams *params) {
 	}
 }
 
-int Scene::AddSource(Source *source, struct vec2 *bounds) {
+int Scene::add_source(Source *source, struct vec2 *bounds) {
+    std::string transition_name = std::string("transition_"+ name_);
+	obs_source_t* obs_transition_ = obs_source_create(defaultTransitionType.c_str(),
+                 transition_name.c_str(), NULL, nullptr);
+	if (!obs_transition_) {
+		LOG(ERROR)<<"Error while creating obs_transition"<<std::endl;
+        throw "Unable to create obs_transition";
+	}
     obs_source_t   *obs_source;
     _sources[source->get_source_name()] = source;
     obs_sceneitem_t* obs_scene_item = obs_scene_add(_obs_scene, source->get_obs_source());
@@ -34,7 +40,7 @@ int Scene::AddSource(Source *source, struct vec2 *bounds) {
     return 0;
 }
 
-int Scene::AddSource(Source *source, struct vec4 *bounds) {
+int Scene::add_source(Source *source, struct vec4 *bounds) {
 
 	// a and b top left corner
 	// c and d resolution

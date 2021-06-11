@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
     Show *show = new Show(show_name);
     struct vec2 bounds = {1920, 1080};
-    scene->AddSource(source,  &bounds);
+    scene->add_source(source,  &bounds);
     show->AddScene(scene);
     show->SetActiveScene("scene");
 

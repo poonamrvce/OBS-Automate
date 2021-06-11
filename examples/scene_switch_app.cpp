@@ -63,9 +63,9 @@ int main(int argc, char *argv[]) {
 
     Show *show = new Show(show_name);
     struct vec2 bounds = {300, 180};
-    scene1->AddSource(source1,  &bounds);
+    scene1->add_source(source1,  &bounds);
     
-    // scene2->AddSource(source2,  &bounds);
+    // scene2->add_source(source2,  &bounds);
 
     show->AddScene(scene1);
     // show->AddScene(scene2);

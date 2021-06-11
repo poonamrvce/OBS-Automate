@@ -130,7 +130,7 @@ list<string> split1(string s)
 
 //             Source *source = new Source(&sourceParams);
 //             struct vec2 bounds = {1920, 1080};
-//             scene->AddSource(source, &bounds);
+//             scene->add_source(source, &bounds);
 //         }
 //         scenes[scene] = source_list;
 //     }
@@ -259,7 +259,7 @@ class InputParser{
         bbox_struct.w=nums[2];
         bbox_struct.z=nums[3];
 
-        scene->AddSource(source,&bbox_struct);
+        scene->add_source(source,&bbox_struct);
     }
 
     Scene* get_scene_from_string(string scene_name,string scene_items_string){

@@ -35,10 +35,10 @@ class Source {
     public:
     Source(SourceParams *params);
     obs_source_t *get_obs_source() { return obs_source_;}
-    string  get_source_name() { return name_;}
+    string  get_source_name() { return _name;}
 
     private:
-    string   name_;
+    string   _name;
     obs_source_t   *obs_source_;
     private:
     obs_source_t* get_local_file_source(string name, string localFile, bool looping);

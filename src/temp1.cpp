@@ -1,23 +1,28 @@
-#ifndef __UTILS_HPP__
-#define __UTILS_HPP__
 #include <bits/stdc++.h>
-#include "Scene.hpp"
-#include "Source.hpp"
-#include "Show.hpp"
-
-//regex definitions
-#define wsp "[ ]*"
-#define keyword "image|color|video|text|browser"
-#define identifier "[0-9a-zA-Z_]+"
-#define digit "[0-9]"
-#define decimal digit "+[.]" digit "+"
-#define time decimal "sec|" decimal "min"
-
 using namespace std;
 
 
-class InputParser{
+string get_file_name(string url)
+{
+    int i = url.find_last_of('/');
+    auto j = url.find_last_of('.');
+    return url.substr(i + 1, j - i - 1);
+}
 
+list<string> split1(string s)
+{
+    regex pat("[a-zA-Z0-9_./]+");
+    list<string> vec;
+    sregex_iterator it2;
+    for (sregex_iterator it1(s.begin(), s.end(), pat); it1 != it2; it1++)
+    {
+        vec.push_back((*it1).str());
+    }
+    return vec;
+}
+
+class InputParser
+{
 private:
     regex nested_source_pat, source_pat, show_item_pat, show_scene_items_pat;
     string inp = "A ( image1 image /path/to/img/ (a,b,c,d) ;  color1 color 0x672632 (0,0,%33,%33) ; video1 video /path/jsk/ldkmkd )";
@@ -188,58 +193,87 @@ private:
         return scene;
     }
 
-    list<ShowItem> get_show_items_from_string(string item_string){
-        
+    list<ShowItem> get_show_items_from_string(string item_string)
+    {
+        list<ShowItem> items;
+        ShowItem item;
+
         smatch sm;
         regex_match(item_string, sm, show_item_pat);
-        ShowItem item;
-        item.duration=get_time(sm.str(2));
-        if(scenes.find(sm.str(1))!=scenes.end()){
+        
+        if (!sm.str(5).empty())
+        { // A 10sec color2 :5sec video1 7sec:9sec
+            item.duration=get_time(sm.str(2));
             item.scene=scenes[sm.str(1)];
             item.itemType=ShowItemType::Scene;
-        }else if(sources.find(sm.str(1))!=sources.end()){
-            item.source=sources[sm.str(1)];
-            item.itemType=ShowItemType::Source;
-        }else
-            return {};
-        
-        if(item.itemType==ShowItemType::Scene && !sm.str(5).empty()){
-            list<ShowItem> items;
-            auto scene_items=sm.str(5);
-            sregex_iterator b;
-            for(auto a=sregex_iterator(scene_items.begin(),scene_items.end(),show_scene_items_pat);a!=b;a++){
-                string str=(*a).str();
-                auto lis=split(str,' ');
-                ShowItem subitem;
-                subitem.itemType=ShowItemType::SceneItem;
-                subitem.source=item.scene->get_source(lis.front());
-                lis=split(lis.back(),':');
-
-                subitem.duration=get_time(lis.front());
-                subitem.start=true;
-                if(subitem.duration<item.duration)
-                    items.push_back(subitem);
-
-                subitem.duration+=get_time(lis.back());
-                subitem.start=false;
-                if(subitem.duration<item.duration)
-                    items.push_back(subitem);
-            }
-            sort(items.begin(),items.end(),[](ShowItem &a, ShowItem &b)-> bool {
-                return a.duration<b.duration;
-            });
             items.push_back(item);
-            int time_elapsed=0;
-            for(auto i=items.begin();i!=items.end();i++){
-                i->duration-=time_elapsed;
-                time_elapsed+=i->duration;
-            }
-            return items;
-        }else
-            return {item};
-    }
 
-public:
+            if(!sm.str(5).empty()){
+                auto text=sm.str(5);
+                sregex_iterator b;
+                for(auto a=sregex_iterator(text.begin(),text.end(),show_scene_items_pat);a!=b;a++){
+                    string str=(*a).str();
+                    auto lis=split(str,' ');
+                    item.itemType=ShowItemType::SceneItem;
+                    item.source=items.front().scene->get_source(lis.front());
+                    lis.pop_front();
+                    lis=split(lis.front(),':');
+                    item.start=get_time(lis.front());
+                    item.duration=get_time(lis.back());
+                    items.push_back(item);
+                }
+            }
+
+            sceneName = ;
+            if (scenes.count(sceneName) == 0)
+            {
+                break;
+            }
+            sceneTime = ; // A color1 10sec
+            if (not there)
+            {
+                scenetime = 99999;
+            }
+            // mp["color1"] = <"","">
+            convert();
+            vector<pair<int, pair<string, bool>>> arr;
+            arr.sort();
+
+            for (int i = 0; i < arr.size(); i++)
+            {
+                if (scenes[sceneName]._sources.count(arr[i].second.first) == 0)
+                {
+                    cout << "ERROR";
+                    exit(0);
+                }
+                else
+                {
+                    sourcename = arr[i].second.first;
+                    sourcetime = arr[i].first;
+                    status = arr[i].second.second;
+                }
+            }
+            else if (regex_match(input_string, Source))
+            { // B 90sec // C 20sec // A 10sec
+                sourceName = ;
+                sourceTime = ;
+
+                if (sources.count(sourceName) == 0)
+                {
+                    // source
+                }
+                else if (scenes.count(sourceName) == 0)
+                {
+                    // scene
+                }
+                else
+                {
+                    continue;
+                }
+            }
+        }
+
+    public:
         void parse_input_file(string file_name)
         {
             ifstream file(file_name);
@@ -273,7 +307,8 @@ public:
 
             this->InputParser::~InputParser();
         }
-};
 
-    
-#endif
+        ~InputParser()
+        {
+        }
+    };

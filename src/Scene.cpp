@@ -3,7 +3,7 @@
 
 vec2* Scene::default_bounds = new vec2;
 
-obs_source_t* Scene::GetSceneSource() {
+obs_source_t* Scene::get_scene_source() {
 	return obs_scene_get_source(_obs_scene);
 }
 
@@ -71,9 +71,12 @@ int Scene::add_source(Source *source, struct vec4 *bounds) {
 
 vec2 Scene::get_bounds(){
 	vec2 bounds;
-	bounds.x=obs_source_get_width(GetSceneSource());
-	bounds.y=obs_source_get_height(GetSceneSource());
+	bounds.x=obs_source_get_width(get_scene_source());
+	bounds.y=obs_source_get_height(get_scene_source());
 	return bounds;
 }
 
+Source* Scene::get_source(string source_name){
+	return _sources[source_name];
+}
 

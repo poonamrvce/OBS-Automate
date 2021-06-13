@@ -19,17 +19,18 @@ class Scene {
     obs_scene_t* _obs_scene;
 
     public:
-    obs_scene_t *GetScene() {
+    obs_scene_t *get_scene() {
         return _obs_scene;
     }
-    std::string get_source_name() {
+    std::string get_scene_name() {
         return _name;
     }
     static vec2 *default_bounds ;
     Scene(SceneParams *params);
-    obs_source_t* GetSceneSource();
+    obs_source_t* get_scene_source();
     int add_source(Source *source, vec2 *bounds);
     int add_source(Source *source, vec4 *bounds);
+    Source* get_source(string source_name);
     vec2 get_bounds();
 };
 

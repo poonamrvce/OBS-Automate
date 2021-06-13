@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
     for(auto scene:scenes){
         show->AddScene(scene.first);
-        show->SetActiveScene((*scenes.begin()).first->get_source_name());
+        show->SetActiveScene((*scenes.begin()).first->get_scene_name());
     }
 
     RTMPInfo info={"rtmp://localhost:1935/live","app4"};
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     unordered_set<string> scene_names;
     cout<<"Scenes: ";
     for(auto scene :scenes){
-        string s=scene.first->get_source_name();
+        string s=scene.first->get_scene_name();
         cout<<s<<", ";
         scene_names.insert(s);
     }
@@ -78,6 +78,10 @@ int main(int argc, char *argv[]) {
 	for(;;) {
         
         cin>>cmd;
+        if(cmd=="exit")
+        {
+            break;
+        }
         switch(cmd.back()){
             case ' ':
             case '\n':

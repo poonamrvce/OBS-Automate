@@ -1,0 +1,58 @@
+
+A ( image1 image /path/to/img/ (a,b,c,d) ;  color1 color 0x672632 (0,0,%33,%33) ; video1 video /path/jsk/ldkmkd )
+
+B video /path/to/vid <-- Base case
+
+C ( image1; color1; B )
+
+show:
+B 90sec
+C 20sec
+A 10sec color1 5:15sec video1 7sec:12sec
+C 
+
+
+(5,color1,1),  (7,video1,1)   discard-,(19,video1,0),(20,color1,0)
+5,2,
+sleep(5);
+set(color1);
+
+
+
+setScene(B);
+sleep(10);
+setScene(c);
+sleep(20);
+setScene(A);
+sleep(5);
+show(color1);
+sleep(75);
+show(video1);
+sleep(-70);
+setScene(c);
+
+struct Item{
+    enum itemType(source,scene,sceneItem);
+    union{
+        Source * source;
+        Scene * scene;
+    }
+    struct{
+        int min;
+        int sec;
+    }
+
+}
+
+item1 -> item2 -> item3  -> item4
+10sec -> 20sec -> 15sec
+
+
+start(B)->sleep(10)->wakeup->create(C)->X
+start(C)->sleep(20)->wakeup->create(A)->X
+start(A)->show(color1,5)
+        ->show(video1,5)
+        ->
+        ..
+        ->sleep(10sec)->wakeup->kill->X
+start(C)->infinity

@@ -1,5 +1,7 @@
 #include<string>
 #include<iostream>
+#include <QApplication>
+#include <QPushButton>
 #include <unistd.h>
 #include "obs/obs.h"
 #include "Logging.hpp"

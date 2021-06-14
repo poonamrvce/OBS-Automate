@@ -40,12 +40,12 @@ class Output {
 		static RTMPInfo default_rtmp;
 		static LocalFileInfo default_localFile;
 
-		Output(OutputType _outputType,void *infoptr=nullptr);
+		Output(OutputType outputType,void *infoptr=nullptr);
 		OutputStatus create_rtmp_output();
 		OutputStatus create_ffmpeg_output();
 		OutputStatus create_av_encoder();
-		OutputStatus set_show(Show *show);
-		OutputStatus start_output(bool display);
+		OutputStatus set_output_source(obs_source_t* source);
+		OutputStatus start_output(bool display=false);
 
 };
 

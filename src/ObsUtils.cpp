@@ -19,10 +19,13 @@ int loadModule(const char* binPath, const char* dataPath) {
 
 
 
-int ObsInit() {
+int ObsInit(int argc, char *argv[]) {
 	///////////////
 	// OBS init  //
 	///////////////
+
+	QApplication app(argc, argv);
+
 	if(!obs_startup("en-US", nullptr, nullptr) || !obs_initialized()) {
 		return -1;
 	}

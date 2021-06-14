@@ -26,21 +26,6 @@ private:
     map<string, int> count;
     list<ShowItem> global_items;
 
-    InputParser()
-    {
-
-        nested_source_pat = regex(wsp "(" identifier ")?" wsp "[(](.*)[)]" wsp "$");
-        source_pat = regex(wsp "(" identifier ")?" wsp "(" keyword ")"
-                               "(.*)");
-        show_item_pat = regex(wsp "(" identifier ")"
-                                  " "
-                                  "(" time ")?" wsp "(.*)");
-        show_scene_items_pat = regex("("
-                                     "(" identifier ")"
-                                     " "
-                                     "(" time ")?:(" time ")" wsp ")");
-    }
-
     list<string> split(string text, char delim)
     {
         string pattern = "[^ ]+";
@@ -261,40 +246,56 @@ private:
     }
 
 public:
-        Show parse_input_file(string file_name)
+
+    InputParser()
+    {
+
+        nested_source_pat = regex(wsp "(" identifier ")?" wsp "[(](.*)[)]" wsp "$");
+        source_pat = regex(wsp "(" identifier ")?" wsp "(" keyword ")"
+                               "(.*)");
+        show_item_pat = regex(wsp "(" identifier ")"
+                                  " "
+                                  "(" time ")?" wsp "(.*)");
+        show_scene_items_pat = regex("("
+                                     "(" identifier ")"
+                                     " "
+                                     "(" time ")?:(" time ")" wsp ")");
+    }
+
+    Show parse_input_file(string file_name)
+    {
+        ifstream file(file_name);
+        string input_string;
+        smatch sm;
+        while (getline(file, input_string))
         {
-            ifstream file(file_name);
-            string input_string;
-            smatch sm;
-            while (getline(file, input_string))
-            {
 
-                if (input_string == "")
-                    continue;
-                if (input_string == "show:")
-                {
-                    break;
-                }
-                else if (regex_match(input_string, sm, nested_source_pat))
-                {
-                    auto scene = get_scene_from_string(sm.str(1), sm.str(2));
-                    scenes[scene->get_scene_name()] = scene;
-                }
-                else
-                {
-                    auto source = get_source_from_string(input_string);
-                    sources[source->get_source_name()] = source;
-                };
-            }
-            while (getline(file, input_string))
+            if (input_string == "")
+                continue;
+            if (input_string == "show:")
             {
-                auto items = get_show_items_from_string(input_string);
-                global_items.splice(global_items.end(), items);
+                break;
             }
-
-            this->InputParser::~InputParser();
-            return Show(sources,scenes,global_items);
+            else if (regex_match(input_string, sm, nested_source_pat))
+            {
+                auto scene = get_scene_from_string(sm.str(1), sm.str(2));
+                scenes[scene->get_scene_name()] = scene;
+            }
+            else
+            {
+                auto source = get_source_from_string(input_string);
+                sources[source->get_source_name()] = source;
+            };
         }
+        while (getline(file, input_string))
+        {
+            auto items = get_show_items_from_string(input_string);
+            global_items.splice(global_items.end(), items);
+        }
+
+        this->InputParser::~InputParser();
+        return Show(sources,scenes,global_items);
+    }
 };
 
     

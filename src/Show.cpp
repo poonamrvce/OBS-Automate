@@ -15,6 +15,11 @@ Show::Show(map<string,Source*> sources,
 }
 
 void Show::play_show_items(){
+
+    Output myoutput(OutputType::RTMP,NULL);
+    myoutput.set_output_source(_root_transition);
+    myoutput.start_output();
+
     for(auto item:_show_items){
         switch (item.itemType)
         {

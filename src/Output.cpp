@@ -10,8 +10,8 @@ LocalFileInfo Output::default_localFile={
     .url="/vol/sample/output0.mkv"
 };
 
-OutputStatus Output::set_show(Show *show){
-    obs_set_output_source(0, show->GetShowSource());
+OutputStatus Output::set_output_source(obs_source_t* source){
+    obs_set_output_source(0, source);
 }
 
 OutputStatus Output::start_output(bool display){

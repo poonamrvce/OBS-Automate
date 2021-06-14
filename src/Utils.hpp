@@ -248,7 +248,7 @@ private:
             //sort by time
             sort(items.begin(),items.end(),[](ShowItem &a, ShowItem &b)-> bool {return a.duration<b.duration;});
             items.push_back(item);
-            
+
             //convert scene-item's time from (relative to parent-scene) to (relative to previous-scene-item)
             int time_elapsed=0;
             for(auto i=items.begin();i!=items.end();i++){
@@ -261,7 +261,7 @@ private:
     }
 
 public:
-        void parse_input_file(string file_name)
+        Show parse_input_file(string file_name)
         {
             ifstream file(file_name);
             string input_string;
@@ -293,6 +293,7 @@ public:
             }
 
             this->InputParser::~InputParser();
+            return Show(sources,scenes,global_items);
         }
 };
 

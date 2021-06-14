@@ -16,31 +16,39 @@ enum class ShowItemType
     SceneItem
 };
 
+struct ShowSource{
+
+    Source *source;
+};
+
+struct ShowScene{
+
+    Scene *scene;
+    int flags;
+};
+
+struct ShowSceneItem{
+
+    Scene *scene;
+    Source *sceneItem;
+    bool start;
+};
+
+
 struct ShowItem
 {
     ShowItemType itemType;
     union
     {
-        struct
-        {
-            Source *source;
-        };
-        struct
-        {
-            Scene *scene;
-        };
-        struct
-        {
-            Source *sceneItem;
-            bool start;
-        };
+        ShowSource showSource;
+        ShowScene showScene;
+        ShowSceneItem showSceneItem;
     };
     int duration;
 };
 
 class Show {
     public:
-    static string defaultTransitionType;
     Show(std::string   name); 
     int AddScene(Scene *scene);
     void SetActiveScene(std::string scene_name);
@@ -58,9 +66,11 @@ class Show {
         list<ShowItem> _show_items;
         obs_source_t* _root_transition;
     public:
+        static string defaultTransitionType;
         Show(map<string,Source*> sources,
             map<string, Scene*> scenes,
             list<ShowItem> show_items);
+        void play_show_items();
 };
 
 

@@ -103,7 +103,7 @@ private:
         return new Source(&sourceParams);
     }
 
-    void get_scene_source_from_string(string source_string, Scene *scene)
+    void get_scene_source_from_string(string source_string, Scene *scene, int index)
     {
 
         smatch sm;
@@ -172,7 +172,7 @@ private:
         bbox_struct.w = nums[2];
         bbox_struct.z = nums[3];
 
-        scene->add_source(source, &bbox_struct);
+        scene->add_source(source, index, &bbox_struct);
     }
 
     Scene *get_scene_from_string(string scene_name, string scene_items_string)
@@ -181,9 +181,11 @@ private:
         SceneParams sceneParams = {
             .name = scene_name};
         Scene *scene = new Scene(&sceneParams);
+        int scene_item_index=0;
         for (auto source_string : split(scene_items_string, ';'))
         {
-            get_scene_source_from_string(source_string, scene);
+            get_scene_source_from_string(source_string, scene, scene_item_index);
+            scene_item_index++;
         }
         return scene;
     }
@@ -195,10 +197,14 @@ private:
         ShowItem item;
         item.duration=get_time(sm.str(2));
         if(scenes.find(sm.str(1))!=scenes.end()){
-            item.scene=scenes[sm.str(1)];
             item.itemType=ShowItemType::Scene;
+            item.showScene={
+                .scene=scenes[sm.str(1)],
+                .flags=0
+            };
         }else if(sources.find(sm.str(1))!=sources.end()){
-            item.source=sources[sm.str(1)];
+            item.showSource={
+                .source= sources[sm.str(1)]};
             item.itemType=ShowItemType::Source;
         }else
             return {};
@@ -212,23 +218,38 @@ private:
                 auto lis=split(str,' ');
                 ShowItem subitem;
                 subitem.itemType=ShowItemType::SceneItem;
-                subitem.source=item.scene->get_source(lis.front());
+                subitem.showSceneItem={
+                    .scene=item.showScene.scene,
+                    .sceneItem=item.showScene.scene->get_source(lis.front()),
+                    .start=true
+                };
+
+                auto index=item.showScene.scene->get_source_index(lis.front());
                 lis=split(lis.back(),':');
 
-                subitem.duration=get_time(lis.front());
-                subitem.start=true;
-                if(subitem.duration<item.duration)
-                    items.push_back(subitem);
+                if(!lis.front().empty()){
 
-                subitem.duration+=get_time(lis.back());
-                subitem.start=false;
-                if(subitem.duration<item.duration)
-                    items.push_back(subitem);
+                    item.showScene.flags = item.showScene.flags | 1<<index;
+                    subitem.duration=get_time(lis.front());
+                    subitem.showSceneItem.start=true;
+                    if(subitem.duration<item.duration)
+                        items.push_back(subitem);
+                }
+
+                if(!lis.back().empty()){
+
+                    subitem.duration+=get_time(lis.back());
+                    subitem.showSceneItem.start=false;
+                    if(subitem.duration<item.duration)
+                        items.push_back(subitem);
+                }
             }
-            sort(items.begin(),items.end(),[](ShowItem &a, ShowItem &b)-> bool {
-                return a.duration<b.duration;
-            });
+
+            //sort by time
+            sort(items.begin(),items.end(),[](ShowItem &a, ShowItem &b)-> bool {return a.duration<b.duration;});
             items.push_back(item);
+            
+            //convert scene-item's time from (relative to parent-scene) to (relative to previous-scene-item)
             int time_elapsed=0;
             for(auto i=items.begin();i!=items.end();i++){
                 i->duration-=time_elapsed;

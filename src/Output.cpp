@@ -123,7 +123,7 @@ OutputStatus Output::create_rtmp_output(){
                 break;
         }
 
-        //obs_set_output_source(1, scene2->get_scene_source());
+        //obs_set_output_source(1, scene2->get_obs_scene_source());
         obs_encoder_set_video(encoder->GetVideoEncoder(), obs_get_video());
         obs_encoder_set_audio(encoder->GetAudioEncoder(), obs_get_audio());
         obs_output_set_video_encoder(output, encoder->GetVideoEncoder());

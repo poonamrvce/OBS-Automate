@@ -114,7 +114,7 @@ private:
                options_string = sm.str(3);
         LOG(DEBUG)<<endl<<"source_id:"<<source_id<<", source_type:"<<source_type<<", options_string:"<<options_string<<endl;
 
-        //parse options into list
+        //parse hey sup can u start audio ya starte i pressed join, did i? no you are not showing up for me.. options into list
         list<string> options = split(options_string, ' ');
         LOG(DEBUG)<<"options:"<<endl;
         for(auto opt:options)

@@ -40,12 +40,11 @@ class Source {
     private:
     string   _name;
     obs_source_t   *obs_source_;
-    private:
-    obs_source_t* get_local_file_source(string name, string localFile, bool looping);
-    obs_source_t* get_browser_source(string name, string url);
+    obs_source_t* get_local_file_source(string name,  const char* localFile, bool looping);
+    obs_source_t* get_browser_source(string name,  const char* url);
     obs_source_t* get_color_source(string name, int color);
-    obs_source_t* get_image_source(string name, string localFile);
-    obs_source_t* get_text_source(string name, string text);
+    obs_source_t* get_image_source(string name,  const char* localFile);
+    obs_source_t* get_text_source(string name,  const char* text);
 
 
 };

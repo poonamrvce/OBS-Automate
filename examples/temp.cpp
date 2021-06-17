@@ -52,7 +52,7 @@ string allSourcePattern(){
 #define keyword "image|color|video|text|browser"
 #define identifier "[0-9a-zA-Z_]+"
 #define digit "[0-9]"
-#define decimal digit "+(\." digit "+)?"
+#define decimal digit "+([.]" digit "+)?"
 #define time decimal "sec|" decimal "min"
 
 regex nested_source_pat( wsp "(" identifier ")?" wsp "[(](.*)[)]" wsp "$" );
@@ -239,6 +239,7 @@ int main(){
     for(int i=0;i<sm.size();i++)
         cout<<i<<": "<<sm.str(i)<<endl;
     // cout<<str1.substr(0,str1.size()-3);
+    
     
 }
 

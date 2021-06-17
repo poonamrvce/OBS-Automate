@@ -5,7 +5,6 @@
 #include "obs/obs.h"
 #include "Source.hpp"
 #include "Logging.hpp"
-#include "Show.hpp"
 
 using namespace std;
 
@@ -23,6 +22,7 @@ class Scene {
 
     public:
         static vec2 *default_bounds ;
+        static string defaultTransitionType;
 
         Scene(SceneParams *params);
         obs_scene_t *get_obs_scene() {return _obs_scene;}
@@ -36,7 +36,6 @@ class Scene {
         void start_scene_item(Source* scene_item);
         void stop_scene_item(Source* scene_item);
 
-        int add_source(Source *source, int index, vec2 *bounds);
 };
 
 #endif //__SCENE_HPP__

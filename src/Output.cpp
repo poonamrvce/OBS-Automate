@@ -2,7 +2,7 @@
 
 
 RTMPInfo Output::default_rtmp={
-    .stream="rtmp://localhost:1935/live/",
+    .stream="rtmp://localhost:1935/live",
     .key="app0"
 };
 

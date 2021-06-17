@@ -13,41 +13,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 include_directories(./src)
 
-# simple_obs_app
-add_executable(simple_obs_app
-    examples/simple_obs_app.cpp
-)
-target_link_libraries(simple_obs_app
-    Qt5::Widgets
-    obs)
-
-# scene_switch_app
-add_executable(scene_switch_app 
-                src/Encoder.cpp
-                src/Show.cpp
-                src/Output.cpp
-                src/Scene.cpp
-                src/Source.cpp
-                src/ObsUtils.cpp
-                examples/scene_switch_app.cpp)
-
-target_link_libraries(scene_switch_app
-    Qt5::Widgets
-    obs)
-
-# browser_src_app
-add_executable(browser_src_app 
-                src/Encoder.cpp
-                src/Show.cpp
-                src/Scene.cpp
-                src/Source.cpp
-                src/ObsUtils.cpp
-                examples/browser_src_app.cpp)
-
-target_link_libraries(browser_src_app
-    Qt5::Widgets
-    obs)
-
 # all_src_app
 add_executable(all_src_app 
                 src/Encoder.cpp

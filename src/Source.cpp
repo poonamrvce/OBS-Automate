@@ -1,7 +1,9 @@
 
 #include "Source.hpp"
 
-obs_source_t* Source::get_local_file_source(string name, string url, bool looping) {
+obs_source_t* Source::get_local_file_source(string name,  const char* localFile, bool looping) {
+
+    LOG(DEBUG)<<"video file:"<<localFile<<endl;
 	obs_data_t	*obs_data;
     obs_data = obs_data_create();
 	if (!obs_data) {
@@ -11,7 +13,7 @@ obs_source_t* Source::get_local_file_source(string name, string url, bool loopin
 
 	LOG(DEBUG)<<"create ffmpeg src"<<endl;
 
-	obs_data_set_string(obs_data, "local_file", url.c_str());
+	obs_data_set_string(obs_data, "local_file", localFile);
 	obs_data_set_bool(obs_data, "is_local_file", true);
 	obs_data_set_bool(obs_data, "looping", looping);
 	obs_data_set_bool(obs_data, "hw_decode", false);
@@ -28,20 +30,20 @@ obs_source_t* Source::get_local_file_source(string name, string url, bool loopin
     return obs_source_;
 }
 
-obs_source_t* Source::get_browser_source(string name, string url) {
+obs_source_t* Source::get_browser_source(string name,  const char* url) {
 	obs_data_t	*obs_data;
     obs_data = obs_data_create();
 	if (!obs_data) {
 		LOG(ERROR)<<"Failed to create obs_data"<<endl;
 		return NULL;
 	}
-	bool is_local=url.substr(0,4)!="http";
+	bool is_local=strncmp(url,"http",4)!=0;
 	LOG(DEBUG)<<"create browser src"<<endl;
 
 	if(is_local)
-		obs_data_set_string(obs_data, "local_file", url.c_str());
+		obs_data_set_string(obs_data, "local_file", url);
 	else
-		obs_data_set_string(obs_data, "url", url.c_str());
+		obs_data_set_string(obs_data, "url", url);
 	obs_data_set_bool(obs_data, "is_local_file", is_local);
 	
 
@@ -89,7 +91,7 @@ obs_source_t* Source::get_color_source(string name, int color) {
     return obs_source_;
 }
 
-obs_source_t* Source::get_image_source(string name, string localFile) {
+obs_source_t* Source::get_image_source(string name, const char* localFile) {
 	obs_data_t	*obs_data;
     obs_data = obs_data_create();
 	if (!obs_data) {
@@ -97,7 +99,7 @@ obs_source_t* Source::get_image_source(string name, string localFile) {
 		return NULL;
 	}
 
-	obs_data_set_string(obs_data, "file", localFile.c_str());
+	obs_data_set_string(obs_data, "file", localFile);
 	obs_data_set_bool(obs_data,"unload",false);
 
 	obs_source_ = obs_source_create("image_source", name.c_str(), obs_data, nullptr);
@@ -110,7 +112,7 @@ obs_source_t* Source::get_image_source(string name, string localFile) {
     return obs_source_;
 }
 
-obs_source_t* Source::get_text_source(string name, string text) {
+obs_source_t* Source::get_text_source(string name,  const char* text) {
 
 	obs_data_t *settings = obs_data_create();
 	obs_data_t *font = obs_data_create();
@@ -125,7 +127,7 @@ obs_source_t* Source::get_text_source(string name, string text) {
 	obs_data_set_int(font, "size", 30 );
 
 	obs_data_set_obj(settings, "font", font);
-	obs_data_set_string(settings, "text", text.c_str());
+	obs_data_set_string(settings, "text", text);
 	obs_data_set_bool(settings, "outline", false);
 
 	if(0 != loadModule(LIBOBS_PLUGINS_PATH "text-freetype2.so", LIBOBS_PLUGINS_DATA_PATH "text-freetype2")) {
@@ -148,6 +150,7 @@ obs_source_t* Source::get_text_source(string name, string text) {
 
 
 Source::Source(SourceParams  *params) {
+	_name=params->name;
     switch(params->sourceType) {
 
         case SourceType::LocalFile:

@@ -14,7 +14,8 @@ enum class ShowItemType
 {
     Source,
     Scene,
-    SceneItem
+    SceneItem,
+    None
 };
 
 struct ShowSource{
@@ -31,7 +32,7 @@ struct ShowScene{
 struct ShowSceneItem{
 
     Scene *scene;
-    Source *sceneItem;
+    Source *source;
     bool start;
 };
 

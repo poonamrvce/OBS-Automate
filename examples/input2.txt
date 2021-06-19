@@ -8,11 +8,21 @@ C ( image1; color1; B )
 show:
 B 90sec
 C 20sec
-A 10sec color1 5:15sec video1 7sec:12sec
+A 30sec color1 5: video1 7sec:12sec
 C 
+if(t<scene.duration)
+if(t+duration<scene.duration)
+
+show(A) sleep(5) start(color1) sleep(2) start(video1) sleep(12) stop(video1) sleep(1) stop(color1) sleep(10)
+
+ (5,color1,1),  (7,video1,1)   ,(19,video1,0),(20,color1,0),(10,null,null)
+ *
+
+ sleep(7) s
 
 
-(5,color1,1),  (7,video1,1)   discard-,(19,video1,0),(20,color1,0)
+
+start slepp2 
 5,2,
 sleep(5);
 set(color1);
@@ -56,3 +66,10 @@ start(A)->show(color1,5)
         ..
         ->sleep(10sec)->wakeup->kill->X
 start(C)->infinity
+
+//input3.txt
+B (  video1 video /vol/sample/krishna.mp4 (0,0,100%,100%) ; image1 image /vol/sample/raama.jpg (80%,0,500,300) )
+
+
+show:
+B 15min image1 15sec:3sec

@@ -91,3 +91,7 @@ for testing
 # docker with sound
 
 docker run -it -v  /tmp/.X11-unix:/tmp/.X11-unix  -e  DISPLAY=$DISPLAY -h ubuntu --device /dev/snd -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native  -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native  -v `pwd`:/vol/ ubuntu_obs:04.21  bash
+
+# git push
+git push <remote-name> <local-branch-name>:<remote-branch-name>
+git push official master:automate-input

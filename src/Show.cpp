@@ -31,26 +31,41 @@ void Show::play_show_items(){
 
     for(auto item:_show_items){
         LOG(INFO)<<"now playing :";
-        
-        switch (item.itemType)
-        {
-            case ShowItemType::Scene:
+        if(item.is_source){
+
+                cout<<"Source ,"<<item.showSource.source->get_source_name()<<endl;
+                obs_transition_start(_root_transition,OBS_TRANSITION_MODE_AUTO, 1, item.showSource.source->get_obs_source());
+                sleep(item.duration);
+        }else{
+
                 cout<<"Scene ,"<<item.showScene.scene->get_scene_name()<<endl;
                 item.showScene.scene->set_scene_from_flags(item.showScene.flags);
                 obs_transition_start(_root_transition,OBS_TRANSITION_MODE_AUTO, 1, item.showScene.scene->get_obs_scene_source());
-                break;
-            case ShowItemType::Source:
-                cout<<"Source ,"<<item.showSource.source->get_source_name()<<endl;
-                obs_transition_start(_root_transition,OBS_TRANSITION_MODE_AUTO, 1, item.showSource.source->get_obs_source());
-                break;
-            case ShowItemType::SceneItem:
-                cout<<"SceneItem ,"<<item.showSource.source->get_source_name()<<endl;
-                if(item.showSceneItem.start)
-                    item.showSceneItem.scene->start_scene_item(item.showSceneItem.source);
-                else
-                    item.showSceneItem.scene->stop_scene_item(item.showSceneItem.source);
-                break;
+                
+                LOG(DEBUG)<<"ShowSCeneItem ";
+
+                int time_elapsed=0;
+                ShowSceneItem* cur=item.showScene.head;
+
+                while (cur)
+                {
+                    LOG(INFO)<<"now doing item: "<<cur->source->get_source_name()<<" is_start:"<<cur->is_start<<endl ;
+
+                    sleep( cur->time_step - time_elapsed);
+
+                    if(cur->is_start)
+                        item.showScene.scene->start_scene_item(cur->source);
+                    else
+                        item.showScene.scene->stop_scene_item(cur->source);
+                    
+                    time_elapsed=cur->time_step;
+                    auto temp=cur;
+                    cur = cur->next;
+                    delete temp;
+                }
+                    LOG(DEBUG)<<"finish5"<<endl;
+
+                sleep(item.duration - time_elapsed );
         }
-        sleep(item.duration);
     }
 }

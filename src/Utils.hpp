@@ -62,7 +62,7 @@ private:
         string source_id = sm.str(1),
                source_type = sm.str(2),
                options_string = sm.str(3);
-        LOG(DEBUG)<<"source_id:"<<source_id<<", source_type:"<<source_type<<"options_string:"<<options_string<<endl;
+        LOG(DEBUG)<<"source_id:"<<source_id<<", source_type:"<<source_type<<", options_string:"<<options_string<<endl;
 
         //parse options into list
         list<string> options = split(options_string, ' ');
@@ -99,11 +99,18 @@ private:
             sourceParams.sourceType = SourceType::Color;
             sourceParams.color = strtoul(options.front().c_str(), NULL, 16);
             options.pop_front();
+        }else if (source_type == "text")
+        {
+            sourceParams.sourceType = SourceType::Text;
+            auto str=new char[options.front().size()];
+            strcpy(str,options.front().c_str());
+            sourceParams.text = str;
+            options.pop_front();
         }
         return new Source(&sourceParams);
     }
 
-    void get_scene_source_from_string(string source_string, Scene *scene, int index)
+    void get_scene_source_from_string(string source_string, Scene *scene)
     {
 
         smatch sm;
@@ -114,7 +121,7 @@ private:
                options_string = sm.str(3);
         LOG(DEBUG)<<endl<<"source_id:"<<source_id<<", source_type:"<<source_type<<", options_string:"<<options_string<<endl;
 
-        //parse hey sup can u start audio ya starte i pressed join, did i? no you are not showing up for me.. options into list
+        //parse hey sup can u is_start audio ya starte i pressed join, did i? no you are not showing up for me.. options into list
         list<string> options = split(options_string, ' ');
         LOG(DEBUG)<<"options:"<<endl;
         for(auto opt:options)
@@ -153,6 +160,14 @@ private:
             sourceParams.sourceType = SourceType::Color;
             sourceParams.color = strtoul(options.front().c_str(), NULL, 16);
             options.pop_front();
+
+        }else if (source_type == "text")
+        {
+            sourceParams.sourceType = SourceType::Text;
+            auto str=new char[options.front().size()];
+            strcpy(str,options.front().c_str());
+            sourceParams.text = str;
+            options.pop_front();
         }
 
         Source *source = new Source(&sourceParams);
@@ -183,7 +198,7 @@ private:
         bbox_struct.w = nums[2];
         bbox_struct.z = nums[3];
 
-        scene->add_source(source, index, &bbox_struct);
+        scene->add_source(source, &bbox_struct);
     }
 
     Scene *get_scene_from_string(string scene_name, string scene_items_string)
@@ -192,127 +207,105 @@ private:
         SceneParams sceneParams = {
             .name = scene_name};
         Scene *scene = new Scene(&sceneParams);
-        int scene_item_index=0;
         for (auto source_string : split(scene_items_string, ';'))
         {
-            LOG(DEBUG)<<"width:"<<scene->get_bounds().x<<endl;
-            LOG(DEBUG)<<"height:"<<scene->get_bounds().y<<endl;
-            get_scene_source_from_string(source_string, scene, scene_item_index);
-            scene_item_index++;
+            get_scene_source_from_string(source_string, scene);
         }
         return scene;
     }
 
-    list<ShowItem> get_show_items_from_string(string item_string){
+    ShowItem get_show_items_from_string(string item_string){
         LOG(DEBUG)<<"parsing item string :"<<item_string<<endl;
         smatch sm;
         regex_match(item_string, sm, show_item_pat);
-        LOG(DEBUG)<<"got 1 :"<<sm.str(1)<<endl;
-        LOG(DEBUG)<<"got 2 :"<<sm.str(2)<<endl;
-        LOG(DEBUG)<<"got 5 :"<<sm.str(5)<<endl;
         ShowItem item;
+        LOG(DEBUG)<<"got :"<<sm.str(1)<<", "<<sm.str(2)<<", "<<sm.str(5)<<endl;
         item.duration=get_time(sm.str(2));
-        LOG(DEBUG)<<"duration of "<<sm.str(1)<<" is "<<item.duration<<endl;
-        if(scenes.find(sm.str(1))!=scenes.end()){
-            item.itemType=ShowItemType::Scene;
-            item.showScene={
-                .scene=scenes[sm.str(1)],
-                .flags=0
-            };
-        }else if(sources.find(sm.str(1))!=sources.end()){
+        if(sources.find(sm.str(1))!=sources.end()){
+            item.is_source=true;
             item.showSource={
                 .source= sources[sm.str(1)]
             };
-            item.itemType=ShowItemType::Source;
-        }else
-            return {};
+        }else if(scenes.find(sm.str(1))!=scenes.end()){
+            item.is_source=false;
+            item.showScene={
+                .scene=scenes[sm.str(1)],
+                .flags=0,
+                .head=NULL
+            };
+        }
+        LOG(DEBUG)<<"looking at scenetems "<<endl;
         
-        if(item.itemType==ShowItemType::Scene && !sm.str(5).empty()){
-            list<ShowItem> items;
+        if(!item.is_source && !sm.str(5).empty()){
+
             auto scene_items=sm.str(5);
             
             struct TempStruct{
                 Source * source;
-                int _time;
-                bool start;
+                int time_step;
+                bool is_start;
             };
             list<TempStruct> temp_list;
 
             sregex_iterator b;
             for(auto a=sregex_iterator(scene_items.begin(),scene_items.end(),show_scene_items_pat);a!=b;a++){
+                
                 string str=(*a).str();
                 auto lis=split(str,' ');
+                LOG(DEBUG)<<"sceneitem :"<<lis.front()<<endl;
                 TempStruct temp={
                     .source=item.showScene.scene->get_source(lis.front())
                 };
                 auto index=item.showScene.scene->get_source_index(lis.front());
                 lis=split(lis.back(),':');
+                LOG(DEBUG)<<"from :"<<lis.front()<<endl;
+                LOG(DEBUG)<<"duration :"<<lis.back()<<endl;
                 if(!lis.front().empty()){
 
                     item.showScene.flags = item.showScene.flags | 1<<index;
-                    temp.start=true;
-                    temp._time=get_time(lis.front());
-                    if(temp._time<item.duration) temp_list.push_back(temp);
+                    temp.is_start=true;
+                    temp.time_step=get_time(lis.front());
+                    if(temp.time_step<item.duration) temp_list.push_back(temp);
                 }
 
                 if(!lis.back().empty()){
 
-                    temp.start=false;
-                    temp._time+=get_time(lis.front());
-                    if(temp._time<item.duration) temp_list.push_back(temp);
+                    temp.is_start=false;
+                    temp.time_step+=get_time(lis.front());
+                    if(temp.time_step<item.duration) temp_list.push_back(temp);
                 }
-                // ShowItem subitem;
-                // subitem.itemType=ShowItemType::SceneItem;
-                // subitem.showSceneItem={
-                //     .scene=item.showScene.scene,
-                //     .sceneItem=item.showScene.scene->get_source(lis.front()),
-                //     .start=true
-                // };
-
-                // auto index=item.showScene.scene->get_source_index(lis.front());
-                // lis=split(lis.back(),':');
-
-                // if(!lis.front().empty()){
-
-                //     item.showScene.flags = item.showScene.flags | 1<<index;
-                //     subitem.duration=get_time(lis.front());
-                //     subitem.showSceneItem.start=true;
-                //     if(subitem.duration<item.duration)
-                //         items.push_back(subitem);
-                // }
-
-                // if(!lis.back().empty()){
-
-                //     subitem.duration+=get_time(lis.back());
-                //     subitem.showSceneItem.start=false;
-                //     if(subitem.duration<item.duration)
-                //         items.push_back(subitem);
-                // }
             }
+            if(!temp_list.empty()){
 
-            //sort by time
-            temp_list.sort([](const TempStruct & item1, const TempStruct & item2){ return item1._time < item2._time;});
+                //sort by time
+                temp_list.sort([](const TempStruct & item1, const TempStruct & item2){ return item1.time_step < item2.time_step;});
+                
+
+                //creating linked list of scene items inside ShowScene 
+                int time_elapsed=0;
+                ShowSceneItem* curitem=new ShowSceneItem;
+                item.showScene.head=curitem;
+                curitem ->is_start=temp_list.front().is_start;   
+                curitem ->source=temp_list.front().source;
+                curitem ->time_step=temp_list.front().time_step;
+                time_elapsed = curitem->time_step;
+                
+                temp_list.pop_front();
+                        
+                while(temp_list.size()){
+                    curitem ->next=new ShowSceneItem;
+                    curitem = curitem ->next;
+                    curitem ->is_start=temp_list.front().is_start;
+                    curitem ->source=temp_list.front().source;
+                    curitem ->time_step=temp_list.front().time_step;
+                    time_elapsed = curitem->time_step;
+                    temp_list.pop_front();
+                }
+                curitem ->next=nullptr;
+            }
+        }
             
-            ShowItem itemstart={
-                .itemType=ShowItemType::Scene,
-                .duration=temp_list.front()._time
-            };
-            itemstart.showScene=item.showScene;
-            items.push_back(itemstart);
-
-            //convert scene-item's time from (relative to parent-scene) to (relative to previous-scene-item)
-            int time_elapsed=itemstart.duration;
-            TempStruct cur=temp_list.front();
-            temp_list.pop_front();
-            for(auto i=temp_list.begin();i!=temp_list.end();i++){
-                ShowItem temp_item={
-                    .itemType=ShowItemType::SceneItem,
-                    .duration= time_elapsed
-                }
-            }
-            return items;
-        }else
-            return {item};
+        return item;
     }
 
 public:
@@ -376,8 +369,8 @@ public:
             cout<<"parsing show items "<<input_string<<endl;
             if (input_string == "")
                 continue;
-            auto items = get_show_items_from_string(input_string);
-            global_items.splice(global_items.end(), items);
+            auto item = get_show_items_from_string(input_string);
+            global_items.push_back(item);
         }
         cout<<"returning parser "<<endl;
 

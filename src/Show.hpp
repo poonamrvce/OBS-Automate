@@ -10,41 +10,34 @@
 
 using namespace std;
 
-enum class ShowItemType
-{
-    Source,
-    Scene,
-    SceneItem,
-    None
-};
-
 struct ShowSource{
 
     Source *source;
 };
 
+struct ShowSceneItem{
+
+    Source* source;
+    bool is_start;
+    int time_step;
+    ShowSceneItem* next;
+}; 
+
 struct ShowScene{
 
     Scene *scene;
     int flags;
-};
-
-struct ShowSceneItem{
-
-    Scene *scene;
-    Source *source;
-    bool start;
+    ShowSceneItem* head;
 };
 
 
 struct ShowItem
 {
-    ShowItemType itemType;
+    bool is_source;
     union
     {
         ShowSource showSource;
         ShowScene showScene;
-        ShowSceneItem showSceneItem;
     };
     int duration;
 };

@@ -1,6 +1,8 @@
 
 #include "Source.hpp"
 
+set<SourceType> Source::loaded_modules;
+
 obs_source_t* Source::get_local_file_source(string name,  const char* localFile, bool looping) {
 
     LOG(DEBUG)<<"video file:"<<localFile<<endl;
@@ -18,6 +20,12 @@ obs_source_t* Source::get_local_file_source(string name,  const char* localFile,
 	obs_data_set_bool(obs_data, "looping", looping);
 	obs_data_set_bool(obs_data, "hw_decode", false);
 
+	if(loaded_modules.find(SourceType::LocalFile)==loaded_modules.end() )
+		if( 0 != loadModule(LIBOBS_PLUGINS_PATH "obs-ffmpeg.so", LIBOBS_PLUGINS_DATA_PATH "obs-ffmpeg")) {
+			LOG(ERROR)<<"failed to load lib obs-ffmpeg.so"<<std::endl;
+		}else
+			Source::loaded_modules.insert(SourceType::LocalFile);
+			
 	obs_source_ = obs_source_create("ffmpeg_source", name.c_str(), obs_data, nullptr);
 
 	printf("WIDTH %d HEIGHT %d\n" ,(obs_source_get_width(obs_source_)), (obs_source_get_height(obs_source_)));
@@ -59,6 +67,12 @@ obs_source_t* Source::get_browser_source(string name,  const char* url) {
 	obs_data_set_bool(obs_data, "hw_decode", false);
 	obs_data_set_bool(obs_data,"is_showing",true);
 
+	if(loaded_modules.find(SourceType::Browser)==loaded_modules.end() )
+		if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-browser.so", LIBOBS_PLUGINS_DATA_PATH "obs-browser")) {
+        	LOG(ERROR)<<"failed to load lib obs-browser.so"<<std::endl;
+		}else
+			Source::loaded_modules.insert(SourceType::Browser);
+			
 	obs_source_ = obs_source_create("browser_source", name.c_str(), obs_data, nullptr);
 
 	obs_data_release(obs_data);
@@ -80,7 +94,7 @@ obs_source_t* Source::get_color_source(string name, int color) {
 	// obs_data_set_int(obs_data, "width", 800);
 	// obs_data_set_int(obs_data, "height", 600);
 	obs_data_set_int(obs_data, "color", color);
-
+			
 	obs_source_ = obs_source_create("color_source", name.c_str(), obs_data, nullptr);
 
 	obs_data_release(obs_data);
@@ -101,6 +115,12 @@ obs_source_t* Source::get_image_source(string name, const char* localFile) {
 
 	obs_data_set_string(obs_data, "file", localFile);
 	obs_data_set_bool(obs_data,"unload",false);
+
+	if(loaded_modules.find(SourceType::Image)==loaded_modules.end() )
+		if( 0 != loadModule(LIBOBS_PLUGINS_PATH "image-source.so", LIBOBS_PLUGINS_DATA_PATH "image-source")) {
+			LOG(ERROR)<<"failed to load lib image-source.so"<<std::endl;
+		}else
+			Source::loaded_modules.insert(SourceType::Image);
 
 	obs_source_ = obs_source_create("image_source", name.c_str(), obs_data, nullptr);
 
@@ -130,9 +150,11 @@ obs_source_t* Source::get_text_source(string name,  const char* text) {
 	obs_data_set_string(settings, "text", text);
 	obs_data_set_bool(settings, "outline", false);
 
-	if(0 != loadModule(LIBOBS_PLUGINS_PATH "text-freetype2.so", LIBOBS_PLUGINS_DATA_PATH "text-freetype2")) {
-        LOG(ERROR)<<"failed to load lib text-freetype2.so"<<std::endl;
-	}
+	if(loaded_modules.find(SourceType::Text)==loaded_modules.end() )
+		if( 0 != loadModule(LIBOBS_PLUGINS_PATH "text-freetype2.so", LIBOBS_PLUGINS_DATA_PATH "text-freetype2")) {
+			LOG(ERROR)<<"failed to load lib text-freetype2.so"<<std::endl;
+		}else
+			Source::loaded_modules.insert(SourceType::Text);
 
 	obs_source_ = obs_source_create("text_ft2_source", name.c_str(), settings, nullptr);
 

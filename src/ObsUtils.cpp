@@ -68,14 +68,14 @@ int ObsInit(int argc, char *argv[]) {
 
 	// Load modules
 	// For color_source
-	if(0 != loadModule(LIBOBS_PLUGINS_PATH "image-source.so", LIBOBS_PLUGINS_DATA_PATH "image-source")) {
-        LOG(ERROR)<<"failed to load lib image-source.so"<<std::endl;
-		return -1;
-	}
-	if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-ffmpeg.so", LIBOBS_PLUGINS_DATA_PATH "obs-ffmpeg")) {
-        LOG(ERROR)<<"failed to load lib obs-ffmpeg.so"<<std::endl;
-        return -1;
-	}
+	// if(0 != loadModule(LIBOBS_PLUGINS_PATH "image-source.so", LIBOBS_PLUGINS_DATA_PATH "image-source")) {
+    //     LOG(ERROR)<<"failed to load lib image-source.so"<<std::endl;
+	// 	return -1;
+	// }
+	// if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-ffmpeg.so", LIBOBS_PLUGINS_DATA_PATH "obs-ffmpeg")) {
+    //     LOG(ERROR)<<"failed to load lib obs-ffmpeg.so"<<std::endl;
+    //     return -1;
+	// }
 	
 	if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-transitions.so", LIBOBS_PLUGINS_DATA_PATH "obs-transitions")) {
         LOG(ERROR)<<"failed to load lib obs-transitions.so"<<std::endl;
@@ -101,10 +101,10 @@ int ObsInit(int argc, char *argv[]) {
         return -1;
 	}
 
-	if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-browser.so", LIBOBS_PLUGINS_DATA_PATH "obs-browser")) {
-        LOG(ERROR)<<"failed to load lib obs-browser.so"<<std::endl;
-        return -1;
-	}
+	// if(0 != loadModule(LIBOBS_PLUGINS_PATH "obs-browser.so", LIBOBS_PLUGINS_DATA_PATH "obs-browser")) {
+    //     LOG(ERROR)<<"failed to load lib obs-browser.so"<<std::endl;
+    //     return -1;
+	// }
 
 	// if(0 != loadModule(LIBOBS_PLUGINS_PATH "text-freetype2.so", LIBOBS_PLUGINS_DATA_PATH "text-freetype2")) {
     //     LOG(ERROR)<<"failed to load lib text-freetype2.so"<<std::endl;

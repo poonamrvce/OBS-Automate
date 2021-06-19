@@ -17,7 +17,7 @@ Scene::Scene(SceneParams *params) {
 }
 
 
-int Scene::add_source(Source *source, int index, struct vec4 *bounds) {
+int Scene::add_source(Source *source, struct vec4 *bounds) {
 
 	//create transition for each scene item and add it as scene item
 	obs_source_t* _obs_transition = obs_source_create(Scene::defaultTransitionType.c_str(),
@@ -34,7 +34,7 @@ int Scene::add_source(Source *source, int index, struct vec4 *bounds) {
         return -1;
 	}
 
-    _sources[source->get_source_name()] = make_pair(source,index);
+    _sources[source->get_source_name()] = source;
 
 
 	// a and b top left corner
@@ -65,16 +65,18 @@ vec2 Scene::get_bounds(){
 }
 
 Source* Scene::get_source(string source_name){
-	return _sources[source_name].first;
+	return _sources[source_name];
 }
 
 void Scene::start_scene_item(Source* scene_item){
 
+	LOG(INFO)<<"starting "<<scene_item->get_source_name()<<endl;
     obs_transition_start(_transitions[scene_item->get_source_name()], OBS_TRANSITION_MODE_AUTO, 1, scene_item->get_obs_source());
 }
 
 void Scene::stop_scene_item(Source* scene_item){
 
+	LOG(INFO)<<"stoping "<<scene_item->get_source_name()<<endl;
     obs_transition_clear(_transitions[scene_item->get_source_name()]);
 }
         
@@ -82,16 +84,24 @@ void Scene::set_scene_from_flags(int flags){
 	int i=0;
 	LOG(DEBUG)<<"flags= "<<flags<<"\n";
 	for(auto source:_sources){
+		auto source_name=source.first;
 		if(!(flags & 1<<i)){
-			LOG(DEBUG)<<"setting source "<<source.first<<" on\n";
-			auto source_name=source.first;
-			obs_transition_set(_transitions[source_name],source.second.first->get_obs_source());
-		}else
-			LOG(DEBUG)<<"not setting source "<<source.first<<" on\n";
+
+			LOG(DEBUG)<<"setting source "<<source.first<<" at index "<<i <<" on\n";
+			obs_transition_set(_transitions[source_name],source.second->get_obs_source());
+		}else{
+			LOG(DEBUG)<<"not setting source "<<source.first<<" at index "<<i<<" on\n";
+			obs_transition_clear(_transitions[source_name]);
+		}
 		i++;
 	}
 }
 
 int Scene::get_source_index(string source_name){
-	return _sources[source_name].second;
+	int i=0;
+	for(auto src:_sources){
+		if(src.first==source_name)
+			return i;
+		i++;
+	}
 }

@@ -16,7 +16,7 @@ class Scene {
     
     private:
         string  _name;
-        map<string, pair<Source*,int>>  _sources; /**< Sources belonging to the scene */
+        map<string, Source*>  _sources; /**< Sources belonging to the scene */
         map<string, obs_source_t*>  _transitions; /**< Sources belonging to the scene */
         obs_scene_t* _obs_scene;
 
@@ -30,7 +30,7 @@ class Scene {
         obs_source_t* get_obs_scene_source();
         vec2 get_bounds();
         Source* get_source(string source_name);
-        int add_source(Source *source, int index, vec4 *bounds);
+        int add_source(Source *source, vec4 *bounds);
         int get_source_index(string source_name);
         void set_scene_from_flags(int flags);
         void start_scene_item(Source* scene_item);

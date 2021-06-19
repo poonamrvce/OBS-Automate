@@ -1,11 +1,10 @@
 #ifndef __SOURCE_HPP__
 #define __SOURCE_HPP__
 
-#include <string>
 #include "obs/obs.h"
 #include "Logging.hpp"
 #include "ObsUtils.hpp"
-#include <unordered_map>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -33,6 +32,7 @@ struct SourceParams {
 
 class Source {
     public:
+    static set<SourceType> loaded_modules;
     Source(SourceParams *params);
     obs_source_t *get_obs_source() { return obs_source_;}
     string  get_source_name() { return _name;}

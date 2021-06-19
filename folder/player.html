@@ -1,0 +1,31 @@
+<html>
+
+<head>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+  function start(){
+    document.querySelector("button").disabled=true;
+    document.querySelector("div").hidden=false;
+    if (Hls.isSupported()) {
+      var video = document.getElementById('my-video');
+      var hls = new Hls();
+      hls.loadSource(document.querySelector("input").value);
+      hls.attachMedia(video);
+      video.play();
+    }
+  }
+</script>
+</head>
+
+<body >
+  <pre>Enter the URI </pre>
+  <input spellcheck="false" type="text" autofocus size="40" value="http://172.17.0.2/hls/app0.m3u8" />
+  <button onclick="start()" >start</button>
+  <div style="padding: 10px;" >
+    <video style="align-self: center;" id="my-video" width="75%" height="auto" controls=""
+      src="blob:http://hlsbook.net/d736c7dc-485c-40b6-b941-b588feb5bb2d"></video>
+  </div>
+</body>
+
+</html>

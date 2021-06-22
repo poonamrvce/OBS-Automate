@@ -215,11 +215,11 @@ private:
     }
 
     ShowItem get_show_items_from_string(string item_string){
-        LOG(DEBUG)<<"parsing item string :"<<item_string<<endl;
+        // LOG(DEBUG)<<"parsing item string :"<<item_string<<endl;
         smatch sm;
         regex_match(item_string, sm, show_item_pat);
         ShowItem item;
-        LOG(DEBUG)<<"got :"<<sm.str(1)<<", "<<sm.str(2)<<", "<<sm.str(5)<<endl;
+        // LOG(DEBUG)<<"got :"<<sm.str(1)<<", "<<sm.str(2)<<", "<<sm.str(5)<<endl;
         item.duration=get_time(sm.str(2));
         if(sources.find(sm.str(1))!=sources.end()){
             item.is_source=true;
@@ -234,11 +234,12 @@ private:
                 .head=NULL
             };
         }
-        LOG(DEBUG)<<"looking at scenetems "<<endl;
+        // LOG(DEBUG)<<"looking at scenetems "<<endl;
         
         if(!item.is_source && !sm.str(5).empty()){
 
             auto scene_items=sm.str(5);
+            // LOG(DEBUG)<<"Scene's duration"<<item.duration<<endl;
             
             struct TempStruct{
                 Source * source;
@@ -252,26 +253,27 @@ private:
                 
                 string str=(*a).str();
                 auto lis=split(str,' ');
-                LOG(DEBUG)<<"sceneitem :"<<lis.front()<<endl;
+                // LOG(DEBUG)<<"sceneitem :"<<lis.front()<<endl;
                 TempStruct temp={
                     .source=item.showScene.scene->get_source(lis.front())
                 };
                 auto index=item.showScene.scene->get_source_index(lis.front());
                 lis=split(lis.back(),':');
-                LOG(DEBUG)<<"from :"<<lis.front()<<endl;
-                LOG(DEBUG)<<"duration :"<<lis.back()<<endl;
+                // LOG(DEBUG)<<"from :"<<lis.front()<<endl;
+                // LOG(DEBUG)<<"duration :"<<lis.back()<<endl;
                 if(!lis.front().empty()){
 
                     item.showScene.flags = item.showScene.flags | 1<<index;
                     temp.is_start=true;
                     temp.time_step=get_time(lis.front());
                     if(temp.time_step<item.duration) temp_list.push_back(temp);
-                }
+                }else
+                    temp.time_step=0;
 
                 if(!lis.back().empty()){
 
                     temp.is_start=false;
-                    temp.time_step+=get_time(lis.front());
+                    temp.time_step+=get_time(lis.back());
                     if(temp.time_step<item.duration) temp_list.push_back(temp);
                 }
             }
@@ -302,6 +304,14 @@ private:
                     temp_list.pop_front();
                 }
                 curitem ->next=nullptr;
+
+                curitem=item.showScene.head;
+                LOG(DEBUG)<<"Scene items :";
+                while(curitem){
+                    cout<<curitem->time_step<<", ";
+                    curitem=curitem->next;
+                }
+                cout<<endl;
             }
         }
             

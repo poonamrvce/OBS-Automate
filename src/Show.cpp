@@ -28,7 +28,7 @@ void Show::play_show_items(){
     Output myoutput(OutputType::RTMP,NULL);
     myoutput.set_output_source(_root_transition);
     myoutput.start_output();
-
+    
     for(auto item:_show_items){
         LOG(INFO)<<"now playing :";
         if(item.is_source){
@@ -42,7 +42,7 @@ void Show::play_show_items(){
                 item.showScene.scene->set_scene_from_flags(item.showScene.flags);
                 obs_transition_start(_root_transition,OBS_TRANSITION_MODE_AUTO, 1, item.showScene.scene->get_obs_scene_source());
                 
-                LOG(DEBUG)<<"ShowSCeneItem ";
+                LOG(DEBUG)<<"ShowSceneItem "<<endl;;
 
                 int time_elapsed=0;
                 ShowSceneItem* cur=item.showScene.head;
@@ -63,9 +63,12 @@ void Show::play_show_items(){
                     cur = cur->next;
                     delete temp;
                 }
-                    LOG(DEBUG)<<"finish5"<<endl;
 
+                LOG(DEBUG)<<"scene duration is "<<item.duration<< " and elapsed time is "<< time_elapsed<<"\n";
                 sleep(item.duration - time_elapsed );
+
+
+                LOG(DEBUG)<<"finish6"<<endl;
         }
     }
 }
